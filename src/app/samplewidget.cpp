@@ -4,19 +4,22 @@
 #include <QOpenGLContext>
 #include <QOpenGLFunctions>
 #include <QtGui>
+#include <QtCore>
 
 QOpenGLBuffer vbo;
 QOpenGLVertexArrayObject vao;
 static float vertices[] = {0, 0.5,  0.5, -0.5, -0.5, -0.5};
 QOpenGLShaderProgram shader;
+QTime time;
 
 SampleWidget::SampleWidget(QWidget *parent, Qt::WindowFlags f) : QOpenGLWidget(parent, f)
 {
-
+    time.start();
 }
 
 void SampleWidget::initializeGL()
 {
+    setUpdatesEnabled(true);
     QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
     f->glClearColor(0, 0.5, 1, 1);
     auto context = QOpenGLContext::currentContext();
@@ -41,7 +44,7 @@ void SampleWidget::initializeGL()
 
     //Init shader;
     static const char* vertex = "in vec2 input; void main(){gl_Position = vec4(input, 0, 1);}";
-    static const char* frag = "void main() {gl_FragColor = vec4(1,0,0,1);}";
+    static const char* frag = "uniform float blue; void main() {gl_FragColor = vec4(blue,1-blue,blue,1);}";
     shader.addShaderFromSourceCode(QOpenGLShader::Vertex, vertex);
     shader.addShaderFromSourceCode(QOpenGLShader::Fragment, frag);
     shader.link();
@@ -60,7 +63,10 @@ void SampleWidget::paintGL()
     f->glClear(GL_COLOR_BUFFER_BIT);
 
     vao.bind();
+    float value = 0.5 * (1 + sin(double(time.elapsed())/300));
+    shader.setUniformValue("blue", value);
     f->glDrawArrays(GL_TRIANGLES, 0, 3);
+    update();
 
 
 }
