@@ -8,6 +8,7 @@
 QOpenGLBuffer vbo;
 QOpenGLVertexArrayObject vao;
 static float vertices[] = {0, 0.5,  0.5, -0.5, -0.5, -0.5};
+QOpenGLShaderProgram shader;
 
 SampleWidget::SampleWidget(QWidget *parent, Qt::WindowFlags f) : QOpenGLWidget(parent, f)
 {
@@ -37,6 +38,14 @@ void SampleWidget::initializeGL()
     f->glEnableVertexAttribArray(0);
 
     vao.release();
+
+    //Init shader;
+    static const char* vertex = "in vec2 input; void main(){gl_Position = vec4(input, 0, 1);}";
+    static const char* frag = "void main() {gl_FragColor = vec4(1,0,0,1);}";
+    shader.addShaderFromSourceCode(QOpenGLShader::Vertex, vertex);
+    shader.addShaderFromSourceCode(QOpenGLShader::Fragment, frag);
+    shader.link();
+    shader.bind();
 }
 void SampleWidget::resizeGL(int w, int h)
 {
