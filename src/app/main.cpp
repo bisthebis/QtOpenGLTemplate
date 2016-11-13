@@ -1,13 +1,13 @@
 #include <QtCore>
 #include <QApplication>
 #include <QWidget>
-
+#include "opengldialogviewer.h"
 
 int main(int argc, char** argv)
     {
         QApplication app(argc, argv);
 
-        QWidget window;
+        OpenGLDialogViewer window;
         window.show();
 
         return app.exec();
