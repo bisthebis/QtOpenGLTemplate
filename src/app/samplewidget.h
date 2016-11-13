@@ -7,6 +7,7 @@ class SampleWidget : public QOpenGLWidget
 {
 public:
     SampleWidget(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
+    virtual ~SampleWidget();
 
 protected:
     virtual void paintGL() Q_DECL_OVERRIDE;
