@@ -46,7 +46,7 @@ void SampleWidget::initializeGL()
     vao.release();
 
     //Init shader;
-    static const char* vertex = "attribute vec2 input_vertex; void main(){gl_Position = vec4(input_vertex, 0, 1);}";
+    static const char* vertex = "attribute vec2 input_vertex; uniform mat4 projection; void main(){gl_Position = projection * vec4(input_vertex, 0, 1);}";
     static const char* frag = "uniform float blue; void main() {gl_FragColor = vec4(1, 1, blue, 1);}";
     shader.addShaderFromSourceCode(QOpenGLShader::Vertex, vertex);
     shader.addShaderFromSourceCode(QOpenGLShader::Fragment, frag);
@@ -55,7 +55,11 @@ void SampleWidget::initializeGL()
 }
 void SampleWidget::resizeGL(int w, int h)
 {
-
+    float ratio = float(w) / float(h);
+    //projection.frustum(-1 * ratio, 1 * ratio,  -1, 1, -1, 1);
+    projection.setToIdentity();
+    projection.perspective(45.0f, ratio, -1, 100);
+    //projection.ortho(-1*ratio, 1*ratio, -1, 1, 0, 100);
 }
 
 void SampleWidget::paintGL()
@@ -68,6 +72,7 @@ void SampleWidget::paintGL()
     vao.bind();
     float value = 0.5 * (1 + sin(double(timer.elapsed())/300));
     shader.setUniformValue("blue", value);
+    shader.setUniformValue("projection", projection);
     f->glDrawArrays(GL_TRIANGLES, 0, 3);
     update();
 
